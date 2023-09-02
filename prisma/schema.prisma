@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @id @unique @default(uuid()) @db.Uuid
+
+  name         String @unique
+  login        String @unique
+  passwordHash String
+
+  Department Department[]
+  Treatment  Treatment[]
+}
+
+model Department {
+  id String @id @unique @default(uuid()) @db.Uuid
+
+  name String @unique
+
+  User User[]
+
+  Company   Company @relation(fields: [companyId], references: [id])
+  companyId String  @db.Uuid
+
+  Treatment Treatment[]
+}
+
+model Company {
+  id String @id @unique @default(uuid()) @db.Uuid
+
+  name String @unique
+
+  Department Department[]
+}
+
+model Treatment {
+  id String @id @unique @default(uuid()) @db.Uuid
+
+  isOpen Boolean
+
+  client   User   @relation(fields: [clientId], references: [id])
+  clientId String @db.Uuid
+
+  attendant String?
+
+  Message Message[]
+
+  Department   Department? @relation(fields: [departmentId], references: [id])
+  departmentId String?     @db.Uuid
+}
+
+model Message {
+  id String @id @unique @default(uuid()) @db.Uuid
+
+  text String
+
+  Treatment   Treatment @relation(fields: [treatmentId], references: [id])
+  treatmentId String    @db.Uuid
+}
