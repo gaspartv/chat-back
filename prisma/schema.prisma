@@ -10,9 +10,8 @@ datasource db {
 model User {
   id String @id @unique @default(uuid()) @db.Uuid
 
-  name         String @unique
-  login        String @unique
-  passwordHash String
+  name  String @unique
+  login String @unique
 
   isAttendant Boolean @default(false)
 

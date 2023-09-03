@@ -3,7 +3,6 @@ CREATE TABLE "User" (
     "id" UUID NOT NULL,
     "name" TEXT NOT NULL,
     "login" TEXT NOT NULL,
-    "passwordHash" TEXT NOT NULL,
     "isAttendant" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
