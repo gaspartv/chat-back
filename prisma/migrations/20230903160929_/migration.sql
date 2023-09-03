@@ -4,6 +4,7 @@ CREATE TABLE "User" (
     "name" TEXT NOT NULL,
     "login" TEXT NOT NULL,
     "passwordHash" TEXT NOT NULL,
+    "isAttendant" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -40,6 +41,10 @@ CREATE TABLE "Treatment" (
 CREATE TABLE "Message" (
     "id" UUID NOT NULL,
     "text" TEXT NOT NULL,
+    "sendName" TEXT NOT NULL,
+    "sendTo" TEXT NOT NULL,
+    "receivedName" TEXT NOT NULL,
+    "receivedTo" TEXT NOT NULL,
     "treatmentId" UUID NOT NULL,
 
     CONSTRAINT "Message_pkey" PRIMARY KEY ("id")

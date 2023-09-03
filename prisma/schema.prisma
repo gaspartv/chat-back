@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = "postgresql://docker:docker@localhost:5432/db-chat?schema=public"
 }
 
 model User {
@@ -13,6 +13,8 @@ model User {
   name         String @unique
   login        String @unique
   passwordHash String
+
+  isAttendant Boolean @default(false)
 
   Department Department[]
   Treatment  Treatment[]
@@ -59,6 +61,12 @@ model Message {
   id String @id @unique @default(uuid()) @db.Uuid
 
   text String
+
+  sendName String
+  sendTo   String
+
+  receivedName String
+  receivedTo   String
 
   Treatment   Treatment @relation(fields: [treatmentId], references: [id])
   treatmentId String    @db.Uuid

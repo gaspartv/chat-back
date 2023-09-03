@@ -11,9 +11,14 @@ import { PrismaClient } from '@prisma/client';
 import { Server, Socket } from 'socket.io';
 
 interface IPayload {
-  name: string
-  message: string
-  department: string
+  id?: string;
+  text?: string;
+  sendName?: string;
+  sendTo?: string;
+  receivedName?: string;
+  receivedTo?: string;
+  treatmentId: string;
+  departmentId?: string;
 }
 
 @WebSocketGateway()
@@ -28,8 +33,16 @@ export class AppGateway
   private rooms: Map<string, Set<Socket>> = new Map();
 
   @SubscribeMessage('msgToServer')
-  handleMessage(client: Socket, payload: IPayload): void {
-    this.server.emit(payload.department, payload);
+  handleMessage(client: Socket, payload: IPayload | null): void {
+    console.log(payload);
+
+    if (payload.departmentId) {
+      this.server.emit(payload.departmentId, true);
+    }
+
+    if (payload.treatmentId) {
+      this.server.emit(payload.treatmentId, payload);
+    }
   }
 
   async afterInit(server: Server) {
