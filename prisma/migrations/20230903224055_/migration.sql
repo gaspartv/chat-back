@@ -26,14 +26,14 @@ CREATE TABLE "Company" (
 );
 
 -- CreateTable
-CREATE TABLE "Treatment" (
+CREATE TABLE "Chat" (
     "id" UUID NOT NULL,
     "isOpen" BOOLEAN NOT NULL,
     "clientId" UUID NOT NULL,
-    "attendant" TEXT,
+    "attendantId" TEXT,
     "departmentId" UUID,
 
-    CONSTRAINT "Treatment_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Chat_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -41,10 +41,10 @@ CREATE TABLE "Message" (
     "id" UUID NOT NULL,
     "text" TEXT NOT NULL,
     "sendName" TEXT NOT NULL,
-    "sendTo" TEXT NOT NULL,
+    "sendId" TEXT NOT NULL,
     "receivedName" TEXT NOT NULL,
-    "receivedTo" TEXT NOT NULL,
-    "treatmentId" UUID NOT NULL,
+    "receivedId" TEXT NOT NULL,
+    "chatId" UUID NOT NULL,
 
     CONSTRAINT "Message_pkey" PRIMARY KEY ("id")
 );
@@ -77,7 +77,7 @@ CREATE UNIQUE INDEX "Company_id_key" ON "Company"("id");
 CREATE UNIQUE INDEX "Company_name_key" ON "Company"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Treatment_id_key" ON "Treatment"("id");
+CREATE UNIQUE INDEX "Chat_id_key" ON "Chat"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Message_id_key" ON "Message"("id");
@@ -92,13 +92,13 @@ CREATE INDEX "_DepartmentToUser_B_index" ON "_DepartmentToUser"("B");
 ALTER TABLE "Department" ADD CONSTRAINT "Department_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Treatment" ADD CONSTRAINT "Treatment_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Chat" ADD CONSTRAINT "Chat_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Treatment" ADD CONSTRAINT "Treatment_departmentId_fkey" FOREIGN KEY ("departmentId") REFERENCES "Department"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Chat" ADD CONSTRAINT "Chat_departmentId_fkey" FOREIGN KEY ("departmentId") REFERENCES "Department"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Message" ADD CONSTRAINT "Message_treatmentId_fkey" FOREIGN KEY ("treatmentId") REFERENCES "Treatment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Message" ADD CONSTRAINT "Message_chatId_fkey" FOREIGN KEY ("chatId") REFERENCES "Chat"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_DepartmentToUser" ADD CONSTRAINT "_DepartmentToUser_A_fkey" FOREIGN KEY ("A") REFERENCES "Department"("id") ON DELETE CASCADE ON UPDATE CASCADE;

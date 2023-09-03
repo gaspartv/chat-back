@@ -51,15 +51,15 @@ export class AppControllers {
     dto: {
       text: string;
       sendName: string;
-      sendTo: string;
-      treatmentId: string;
+      sendId: string;
+      chatId: string;
     }
   ) {
     return await this.service.send_message(
       dto.text,
       dto.sendName,
-      dto.sendTo,
-      dto.treatmentId
+      dto.sendId,
+      dto.chatId
     );
   }
 
@@ -77,13 +77,13 @@ export class AppControllers {
 
   // ACEITAR O ATENDIMENTO
   @Patch('chat/answer')
-  async answer_chat(@Body() dto: { treatmentId: string; attendantId: string }) {
-    return await this.service.answer_chat(dto.treatmentId, dto.attendantId);
+  async answer_chat(@Body() dto: { chatId: string; attendantId: string }) {
+    return await this.service.answer_chat(dto.chatId, dto.attendantId);
   }
 
   // FINALIZAR O ATENDIMENTO
   @Patch('chat/close')
-  async close_chat(@Body() dto: { treatmentId: string }) {
-    return await this.service.close_chat(dto.treatmentId);
+  async close_chat(@Body() dto: { chatId: string }) {
+    return await this.service.close_chat(dto.chatId);
   }
 }

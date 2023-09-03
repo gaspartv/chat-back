@@ -15,8 +15,8 @@ model User {
 
   isAttendant Boolean @default(false)
 
-  Department Department[]
-  Treatment  Treatment[]
+  Departments Department[]
+  Chats       Chat[]
 }
 
 model Department {
@@ -24,12 +24,12 @@ model Department {
 
   name String @unique
 
-  User User[]
+  Users User[]
 
   Company   Company @relation(fields: [companyId], references: [id])
   companyId String  @db.Uuid
 
-  Treatment Treatment[]
+  Chats Chat[]
 }
 
 model Company {
@@ -37,20 +37,20 @@ model Company {
 
   name String @unique
 
-  Department Department[]
+  Departments Department[]
 }
 
-model Treatment {
+model Chat {
   id String @id @unique @default(uuid()) @db.Uuid
 
   isOpen Boolean
 
-  client   User   @relation(fields: [clientId], references: [id])
+  Client   User   @relation(fields: [clientId], references: [id])
   clientId String @db.Uuid
 
-  attendant String?
+  attendantId String?
 
-  Message Message[]
+  Messages Message[]
 
   Department   Department? @relation(fields: [departmentId], references: [id])
   departmentId String?     @db.Uuid
@@ -62,11 +62,11 @@ model Message {
   text String
 
   sendName String
-  sendTo   String
+  sendId   String
 
   receivedName String
-  receivedTo   String
+  receivedId   String
 
-  Treatment   Treatment @relation(fields: [treatmentId], references: [id])
-  treatmentId String    @db.Uuid
+  Chat   Chat   @relation(fields: [chatId], references: [id])
+  chatId String @db.Uuid
 }

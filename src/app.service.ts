@@ -7,16 +7,19 @@ export class AppServices {
   constructor(private readonly prisma: PrismaClient) {}
 
   private includeUser = {
-    Department: true,
-    Treatment: { where: { isOpen: true } }
+    Departments: true,
+    Chats: { where: { isOpen: true } }
   };
 
-  private includeChat = { Message: true, Department: true, client: true };
+  private includeChat = { Messages: true, Department: true, Client: true };
 
   async login(login: string) {
     return await this.prisma.user.findUnique({
       where: { login },
-      include: this.includeUser
+      include: {
+        Departments: true,
+        Chats: { where: { isOpen: true } }
+      }
     });
   }
 
@@ -56,9 +59,11 @@ export class AppServices {
       });
     }
 
-    return await this.prisma.user.create({
-      data: { ...data, Department: { connect: { id: departmentFound.id } } },
-      include: this.includeUser
+    const userCreate = await this.prisma.user.create({ data });
+
+    return await this.prisma.user.update({
+      where: { id: userCreate.id },
+      data: { Departments: { connect: { id: departmentFound.id } } }
     });
   }
 
@@ -66,10 +71,10 @@ export class AppServices {
     departmentId: string,
     attendantId: string
   ) {
-    return await this.prisma.treatment.findMany({
+    return await this.prisma.chat.findMany({
       where: {
         isOpen: true,
-        attendant: null,
+        attendantId: null,
         departmentId,
         clientId: { not: attendantId }
       },
@@ -81,11 +86,11 @@ export class AppServices {
     departmentId: string,
     attendantId: string
   ) {
-    return await this.prisma.treatment.findMany({
+    return await this.prisma.chat.findMany({
       where: {
         isOpen: true,
         departmentId,
-        OR: [{ attendant: attendantId }, { clientId: attendantId }]
+        OR: [{ attendantId }, { clientId: attendantId }]
       },
       include: this.includeChat
     });
@@ -94,16 +99,18 @@ export class AppServices {
   async send_message(
     text: string,
     sendName: string,
-    sendTo: string,
-    treatmentId: string
+    sendId: string,
+    chatId: string
   ) {
-    const treatment = await this.prisma.treatment.findUnique({
-      where: { id: treatmentId },
+    const treatment = await this.prisma.chat.findUnique({
+      where: { id: chatId },
       include: this.includeChat
     });
 
     const received =
-      sendTo !== treatment.attendant ? treatment.attendant : treatment.clientId;
+      sendId !== treatment.attendantId
+        ? treatment.attendantId
+        : treatment.clientId;
 
     let userReceived: User;
 
@@ -115,41 +122,41 @@ export class AppServices {
 
     return await this.prisma.message.create({
       data: {
-        treatmentId,
+        chatId,
         text,
-        sendTo,
+        sendId,
         sendName,
-        receivedTo: received || randomUUID(),
+        receivedId: received || randomUUID(),
         receivedName: userReceived?.name || 'Anônimo'
       }
     });
   }
 
   async open_chat(clientId: string, departmentId: string) {
-    return await this.prisma.treatment.create({
+    return await this.prisma.chat.create({
       data: { isOpen: true, clientId, departmentId },
       include: this.includeChat
     });
   }
 
   async find_one_chat(id: string) {
-    return await this.prisma.treatment.findUnique({
+    return await this.prisma.chat.findUnique({
       where: { id },
       include: this.includeChat
     });
   }
 
-  async answer_chat(treatmentId: string, attendantId: string) {
-    return await this.prisma.treatment.update({
-      where: { id: treatmentId },
-      data: { attendant: attendantId },
+  async answer_chat(chatId: string, attendantId: string) {
+    return await this.prisma.chat.update({
+      where: { id: chatId },
+      data: { attendantId },
       include: this.includeChat
     });
   }
 
-  async close_chat(treatmentId: string) {
-    return await this.prisma.treatment.update({
-      where: { id: treatmentId },
+  async close_chat(chatId: string) {
+    return await this.prisma.chat.update({
+      where: { id: chatId },
       data: { isOpen: false },
       include: this.includeChat
     });
