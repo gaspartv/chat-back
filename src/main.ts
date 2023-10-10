@@ -11,8 +11,6 @@ export async function bootstrap() {
     new FastifyAdapter()
   );
 
-  app.enableCors();
-
   await app.listen(8080);
 }
 bootstrap();
